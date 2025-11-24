@@ -54,7 +54,7 @@ export default function ProductsPage() {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full md:w-1/4 px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full md:w-1/4 px-4 text-black bg-gray-300 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
         >
           <option value="">All Priorities</option>
           <option value="high">High Priority</option>
@@ -65,7 +65,7 @@ export default function ProductsPage() {
 
       {loading && (
         <div className="text-center py-20 text-gray-600">
-          Loading products...
+          Loading products... will add a loader
         </div>
       )}
 
