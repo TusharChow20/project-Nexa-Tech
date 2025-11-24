@@ -90,7 +90,7 @@ export default function ProductsPage() {
                   {product.title}
                 </h2>
                 <p className="text-gray-600 text-sm mb-3">
-                  {product.description}
+                  {product.description.split(".").slice(0, 2).join(".") + "."}
                 </p>
 
                 <div className="flex justify-between items-center mt-4">
