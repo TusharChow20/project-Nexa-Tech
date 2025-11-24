@@ -18,8 +18,8 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="navbar bg-base-100 shadow-md">
-      <div className="navbar-start">
+    <div className="navbar bg-base-100 shadow-md sticky top-0  backdrop-blur-md sticky ">
+      <div className="navbar-start ">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
             <svg

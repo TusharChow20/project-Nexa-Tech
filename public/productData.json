@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "title": "Mechanical Gaming Keyboard MK-Pro",
+    "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
+    "description": "A high-performance mechanical gaming keyboard featuring ultra-responsive switches for precision and speed. Built with a durable aluminum frame and customizable RGB lighting effects. Perfect for competitive gamers and productivity users.",
+    "price": 129.99,
+    "meta": {
+      "date": "2025-01-10",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 2,
+    "title": "4K UltraWide Monitor 34” FlexView",
+    "image": "https://images.unsplash.com/photo-1587202372775-a86a4aa4a7f4",
+    "description": "A stunning 34-inch UltraWide 4K display designed for creators, gamers, and productivity workflow. Delivers vibrant colors, high refresh rate, and flicker-free visuals. Ideal for coding, editing, and immersive media experiences.",
+    "price": 499.0,
+    "meta": {
+      "date": "2025-01-08",
+      "priority": "medium"
+    }
+  },
+  {
+    "id": 3,
+    "title": "Wireless Smart Mouse X7",
+    "image": "https://images.unsplash.com/photo-1587825140708-8836f1b43d6e",
+    "description": "An ergonomic wireless mouse offering ultra-smooth tracking and silent clicks. Features adjustable DPI settings and a long-lasting battery that supports up to 60 days of use. Designed for both office work and gaming.",
+    "price": 39.99,
+    "meta": {
+      "date": "2025-01-12",
+      "priority": "low"
+    }
+  },
+  {
+    "id": 4,
+    "title": "Portable SSD 2TB TurboDrive",
+    "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3",
+    "description": "A compact and shock-resistant portable SSD offering super-fast read and write speeds. Ideal for storing large project files, games, and backups. Designed for creators who need reliable and secure storage on the go.",
+    "price": 159.0,
+    "meta": {
+      "date": "2025-01-07",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 5,
+    "title": "Smartwatch Apex S-Series",
+    "image": "https://images.unsplash.com/photo-1516571137133-1be29e54c0e8",
+    "description": "A premium smartwatch with full health tracking, AMOLED display, and long battery life. Supports notifications, workouts, and advanced sensors. Built with a sleek metal body suitable for daily use.",
+    "price": 229.99,
+    "meta": {
+      "date": "2025-01-02",
+      "priority": "medium"
+    }
+  },
+  {
+    "id": 6,
+    "title": "Noise Cancelling Headphones HX-900",
+    "image": "https://images.unsplash.com/photo-1518444021430-9088f46f2b27",
+    "description": "Premium over-ear headphones with industry-leading noise cancellation. Offers deep bass, clear vocals, and up to 30 hours of continuous playback. Designed for music lovers, travelers, and remote workers.",
+    "price": 179.99,
+    "meta": {
+      "date": "2025-01-11",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 7,
+    "title": "USB-C Docking Station ProHub 8-in-1",
+    "image": "https://images.unsplash.com/photo-1587829741301-341d9a41854d",
+    "description": "A versatile 8-in-1 docking station featuring HDMI, USB-C PD, SD card reader, Ethernet, and more. Perfect for laptops, tablets, and ultrabooks. Designed for seamless multitasking and workspace expansion.",
+    "price": 69.99,
+    "meta": {
+      "date": "2025-01-04",
+      "priority": "low"
+    }
+  },
+  {
+    "id": 8,
+    "title": "Smart Home Speaker MiniBox",
+    "image": "https://images.unsplash.com/photo-1512446816042-444d641267d7",
+    "description": "A compact smart speaker with powerful audio, voice assistant support, and multi-device integration. Ideal for home automation, music playback, and hands-free interaction.",
+    "price": 49.99,
+    "meta": {
+      "date": "2025-01-09",
+      "priority": "medium"
+    }
+  },
+  {
+    "id": 9,
+    "title": "LED Work Light DeskPro",
+    "image": "https://images.unsplash.com/photo-1493666438817-866a91353ca9",
+    "description": "A modern LED desk lamp with adjustable brightness, flexible arm, and eye-friendly illumination. Great for study, programming, or creative workspaces with minimal eye strain.",
+    "price": 24.99,
+    "meta": {
+      "date": "2025-01-03",
+      "priority": "low"
+    }
+  },
+  {
+    "id": 10,
+    "title": "Laptop Cooling Pad AeroCool",
+    "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
+    "description": "A high-performance cooling pad featuring dual silent fans and adjustable height settings. Helps maintain laptop performance during gaming, editing, or long productivity sessions.",
+    "price": 34.99,
+    "meta": {
+      "date": "2025-01-06",
+      "priority": "medium"
+    }
+  }
+]
