@@ -1,13 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { User, Mail, LogOut, Settings } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function UserInfo() {
-  const [user] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-  });
+  const { data: session } = useSession();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center p-4">
@@ -21,7 +18,10 @@ export default function UserInfo() {
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <Settings className="w-5 h-5 text-gray-600" />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
                 <LogOut className="w-5 h-5 text-gray-600" />
               </button>
             </div>
@@ -33,8 +33,7 @@ export default function UserInfo() {
             <div className="relative mb-6">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl ring-4 ring-purple-200">
                 <img
-                  src={user.image}
-                  alt={user.name}
+                  src={session?.user?.image}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -52,7 +51,7 @@ export default function UserInfo() {
                       Name
                     </p>
                     <p className="text-xl font-semibold text-gray-800">
-                      {user.name}
+                      {session?.user?.name}
                     </p>
                   </div>
                 </div>
@@ -67,7 +66,7 @@ export default function UserInfo() {
                       Email
                     </p>
                     <p className="text-sm font-medium text-gray-800">
-                      {user.email}
+                      {session?.user?.email}
                     </p>
                   </div>
                 </div>

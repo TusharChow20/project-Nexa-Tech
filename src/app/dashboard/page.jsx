@@ -1,8 +1,15 @@
 import UserInfo from "@/Component/UserInfo";
-import React from "react";
+import { getServerSession } from "next-auth";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import { AuthProvider } from "../Providers";
 
-const page = () => {
-  return <UserInfo></UserInfo>;
-};
+export default async function Page() {
+  const session = await getServerSession(AuthProvider);
 
-export default page;
+  if (!session) {
+    redirect("/login");
+  }
+
+  return <UserInfo />;
+}
