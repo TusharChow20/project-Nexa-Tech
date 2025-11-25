@@ -15,15 +15,39 @@ export default function LoginPage() {
     // console.log("Register submitted:", email, password);
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    if (!name || email || password) {
+    if (!name || !email || !password) {
       setError("Please fill up all the fields");
       return;
+    }
+
+    // fetching routes
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      if (res.ok) {
+        const form = e.target;
+        form.reset();
+      } else {
+        console.log("registration failed");
+      }
+    } catch {
+      console.log("failed");
     }
     // console.log("Register submitted:", name, email, password);
     // Add your registration logic here
