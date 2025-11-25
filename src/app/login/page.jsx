@@ -28,6 +28,20 @@ export default function LoginPage() {
 
     // fetching routes
     try {
+      const resUserExits = await fetch("/api/userExits", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const { user } = await resUserExits.json();
+      if (user) {
+        setError("User Already Exits");
+        return;
+      }
+
       const res = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -273,7 +287,9 @@ export default function LoginPage() {
                       </span>
                     </label>
                   </div>
-
+                  {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                  )}
                   <button type="submit" className="btn btn-primary w-full mb-4">
                     Create Account
                   </button>
@@ -311,6 +327,7 @@ export default function LoginPage() {
             )}
           </div>
         </div>
+
         <p className="text-center text-base-content/60 text-sm mt-6">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
