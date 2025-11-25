@@ -5,11 +5,13 @@ import { User, Lock, Mail, Eye, EyeOff } from "lucide-react";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-
+  const [error, setError] = useState("");
   const handleLogin = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+
+    // if(!name || )
     // console.log("Register submitted:", email, password);
   };
 
@@ -18,7 +20,12 @@ export default function LoginPage() {
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
-    console.log("Register submitted:", name, email, password);
+
+    if (!name || email || password) {
+      setError("Please fill up all the fields");
+      return;
+    }
+    // console.log("Register submitted:", name, email, password);
     // Add your registration logic here
   };
 
