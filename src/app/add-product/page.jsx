@@ -39,12 +39,7 @@ export default function AddProductPage() {
     setLoading(true);
 
     // Validation
-    if (
-      !formData.title ||
-      !formData.image ||
-      !formData.description ||
-      !formData.price
-    ) {
+    if (!formData.title || !formData.description || !formData.price) {
       toast.error("Please fill in all required fields");
       setLoading(false);
       return;

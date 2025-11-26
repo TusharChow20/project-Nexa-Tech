@@ -3,12 +3,15 @@ import React, { useState } from "react";
 import { User, Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -40,10 +43,17 @@ export default function LoginPage() {
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
       toast.error("Please fill up all the fields");
       setError("Please fill up all the fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      setError("Passwords do not match");
       return;
     }
 
@@ -95,11 +105,14 @@ export default function LoginPage() {
           setError(
             "Registration successful but login failed. Please login manually."
           );
+          setIsLogin(true); // Switch to login tab
           return;
         }
 
         toast.success("Welcome! Redirecting...");
-        router.replace("/");
+        setTimeout(() => {
+          router.replace("/");
+        }, 1000);
       } else {
         console.log("registration failed");
         toast.error("Registration failed. Please try again.");
@@ -204,6 +217,9 @@ export default function LoginPage() {
                       Forgot password?
                     </a>
                   </div>
+                  {error && isLogin && (
+                    <p className="text-red-500 text-sm mb-4">{error}</p>
+                  )}
                   <button type="submit" className="btn btn-primary w-full mb-4">
                     Login
                   </button>
@@ -333,8 +349,8 @@ export default function LoginPage() {
                       </span>
                     </label>
                   </div>
-                  {error && (
-                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                  {error && !isLogin && (
+                    <p className="text-red-500 text-sm mb-4">{error}</p>
                   )}
                   <button type="submit" className="btn btn-primary w-full mb-4">
                     Create Account
