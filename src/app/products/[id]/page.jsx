@@ -1,0 +1,181 @@
+"use client";
+
+import React, { useEffect, useState, use } from "react";
+import axios from "axios";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Calendar, Tag, DollarSign } from "lucide-react";
+
+export default function ProductDetailsPage({ params }) {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { id } = use(params);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get("/productData.json");
+        const foundProduct = res.data.find((p) => p.id === parseInt(id));
+        setProduct(foundProduct);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading loading-spinner loading-lg text-primary"></div>
+          <p className="mt-4 text-gray-600">Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Product Not Found
+          </h2>
+          <button
+            onClick={() => router.push("/products")}
+            className="btn btn-primary"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "high":
+        return "badge-error";
+      case "medium":
+        return "badge-warning";
+      case "low":
+        return "badge-success";
+      default:
+        return "badge-ghost";
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-base-100">
+      {/* Back Button */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <button
+          onClick={() => router.push("/products")}
+          className="btn btn-ghost gap-2"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back to Products
+        </button>
+      </div>
+
+      {/* Product Details */}
+      <div className="max-w-7xl mx-auto px-4 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Large Image */}
+          <div className="relative w-full h-96 lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
+            <Image
+              src={product.image}
+              alt={product.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+
+          {/* Product Info */}
+          <div className="space-y-6">
+            {/* Title */}
+            <div>
+              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {product.title}
+              </h1>
+              <div className="flex items-center gap-2 mt-3">
+                <span
+                  className={`badge ${getPriorityColor(
+                    product.meta.priority
+                  )} badge-lg capitalize`}
+                >
+                  {product.meta.priority} Priority
+                </span>
+              </div>
+            </div>
+
+            {/* Price */}
+            <div className="card bg-gradient-to-br from-primary to-secondary text-white shadow-xl">
+              <div className="card-body py-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-6 h-6" />
+                    <span className="text-lg font-medium">Price</span>
+                  </div>
+                  <span className="text-4xl font-bold">${product.price}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="card bg-base-200 shadow-lg">
+              <div className="card-body">
+                <h2 className="card-title text-2xl mb-3">Description</h2>
+                <p className="text-base leading-relaxed opacity-80">
+                  {product.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Meta Information */}
+            <div className="card bg-base-200 shadow-lg">
+              <div className="card-body">
+                <h2 className="card-title text-2xl mb-4">
+                  Product Information
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-base-100 rounded-lg">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-sm opacity-60">Listed Date</p>
+                      <p className="font-semibold">{product.meta.date}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-base-100 rounded-lg">
+                    <Tag className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-sm opacity-60">Product ID</p>
+                      <p className="font-semibold">#{product.id}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 pt-4">
+              <button className="btn btn-primary btn-lg flex-1">
+                Add to Cart
+              </button>
+              <button className="btn btn-outline btn-lg flex-1">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

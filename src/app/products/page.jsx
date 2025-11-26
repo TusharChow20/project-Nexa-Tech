@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,11 +33,17 @@ export default function ProductsPage() {
     return matchSearch && matchCategory;
   });
 
+  const handleViewDetails = (productId) => {
+    router.push(`/products/${productId}`);
+  };
+
   return (
     <div className="px-6 py-10 max-w-7xl mx-auto">
       {/* Page Title */}
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-2">Tech Products</h1>
+        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Tech Products
+        </h1>
         <p className="text-gray-600 max-w-xl mx-auto">
           Explore our latest collection of tech gadgets, accessories, and
           premium devices.
@@ -48,13 +56,13 @@ export default function ProductsPage() {
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:w-1/2 px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
+          className="input input-bordered w-full md:w-1/2"
         />
 
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full md:w-1/4 px-4 text-black bg-gray-300 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
+          className="select select-bordered w-full md:w-1/4"
         >
           <option value="">All Priorities</option>
           <option value="high">High Priority</option>
@@ -64,50 +72,60 @@ export default function ProductsPage() {
       </div>
 
       {loading && (
-        <div className="text-center py-20 text-gray-600">
-          Loading products... will add a loader
+        <div className="text-center py-20">
+          <div className="loading loading-spinner loading-lg text-primary"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
         </div>
       )}
 
-      {!loading && (
+      {!loading && filteredProducts.length === 0 && (
+        <div className="text-center py-20">
+          <p className="text-gray-600 text-lg">No products found.</p>
+        </div>
+      )}
+
+      {!loading && filteredProducts.length > 0 && (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="border rounded-2xl shadow-sm overflow-hidden hover:shadow-xl hover:scale-105 transform transition-all duration-300 bg-white"
+              className="card bg-base-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 transform transition-all duration-300"
             >
-              <div className="relative w-full h-48">
+              <figure className="relative w-full h-48">
                 <Image
                   src={product.image}
                   alt={product.title}
                   fill
-                  className="object-cover rounded-t-lg"
+                  className="object-cover"
                 />
-              </div>
+              </figure>
 
-              <div className="p-4">
-                <h2 className="font-semibold text-lg mb-1 text-black">
-                  {product.title}
-                </h2>
-                <p className="text-gray-600 text-sm mb-3">
+              <div className="card-body">
+                <h2 className="card-title text-lg">{product.title}</h2>
+                <p className="text-sm opacity-70">
                   {product.description.split(".").slice(0, 2).join(".") + "."}
                 </p>
 
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-bold text-blue-600 text-lg">
+                <div className="flex items-center gap-2 my-2">
+                  <span className="badge badge-sm capitalize">
+                    {product.meta.priority}
+                  </span>
+                  <span className="text-xs opacity-60">
+                    {product.meta.date}
+                  </span>
+                </div>
+
+                <div className="card-actions items-center justify-between mt-2">
+                  <span className="text-2xl font-bold text-primary">
                     ${product.price}
                   </span>
-                  <button className="px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all">
+                  <button
+                    onClick={() => handleViewDetails(product.id)}
+                    className="btn btn-primary btn-sm"
+                  >
                     Details
                   </button>
                 </div>
-
-                <p className="text-xs text-gray-500 mt-2">
-                  Date: {product.meta.date}
-                </p>
-                <p className="text-xs text-gray-500 capitalize">
-                  Priority: {product.meta.priority}
-                </p>
               </div>
             </div>
           ))}
