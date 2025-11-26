@@ -13,6 +13,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -23,7 +25,7 @@ export default function ProductDetailsPage({ params }) {
   const router = useRouter();
   const { data: session } = useSession();
   const { id } = use(params);
-  // let isOwner = false;
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -31,6 +33,7 @@ export default function ProductDetailsPage({ params }) {
         setProduct(res.data);
       } catch (error) {
         console.error("Error fetching product:", error);
+        toast.error("Failed to load product details. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -42,8 +45,6 @@ export default function ProductDetailsPage({ params }) {
   }, [id]);
 
   // Check if current user owns the product
-  // console.log(session?.user?.email);
-
   const isOwner = useMemo(() => {
     return (
       product &&
@@ -66,22 +67,32 @@ export default function ProductDetailsPage({ params }) {
     }
 
     if (!session?.user?.email) {
-      alert("You must be logged in to delete products");
+      toast.error("You must be logged in to delete products");
       return;
     }
 
     setDeleting(true);
     try {
       await axios.delete(`${API_BASE_URL}/api/products/${product._id}`, {
-        data: { userEmail: session.user.email }, // Backend requires userEmail for authorization
+        data: { userEmail: session.user.email },
       });
-      alert("Product deleted successfully!");
-      router.push("/products");
+      toast.success("Product deleted successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      // Delay navigation to show the toast
+      setTimeout(() => {
+        router.push("/products");
+      }, 2000);
     } catch (error) {
       console.error("Error deleting product:", error);
-      alert(
+      toast.error(
         error.response?.data?.error ||
-          "Failed to delete product. Please try again."
+          "Failed to delete product. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 4000,
+        }
       );
     } finally {
       setDeleting(false);
@@ -133,6 +144,8 @@ export default function ProductDetailsPage({ params }) {
 
   return (
     <div className="min-h-screen bg-base-100">
+      <ToastContainer />
+
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <button

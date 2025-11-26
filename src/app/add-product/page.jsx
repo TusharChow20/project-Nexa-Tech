@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -23,8 +25,6 @@ export default function AddProductPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,8 +37,6 @@ export default function AddProductPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     // Validation
     if (
@@ -47,13 +45,13 @@ export default function AddProductPage() {
       !formData.description ||
       !formData.price
     ) {
-      setError("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
     if (!session?.user?.email) {
-      setError("User email not found. Please login again.");
+      toast.error("User email not found. Please login again.");
       setLoading(false);
       return;
     }
@@ -64,7 +62,7 @@ export default function AddProductPage() {
         image: formData.image,
         description: formData.description,
         price: parseFloat(formData.price),
-        userEmail: session.user.email, // Add user email
+        userEmail: session.user.email,
         meta: {
           date: formData.date,
           priority: formData.priority,
@@ -76,7 +74,7 @@ export default function AddProductPage() {
         productData
       );
 
-      setSuccess("Product added successfully!");
+      toast.success("Product added successfully! Redirecting...");
 
       // Reset form
       setFormData({
@@ -94,7 +92,7 @@ export default function AddProductPage() {
       }, 2000);
     } catch (err) {
       console.error("Error adding product:", err);
-      setError(
+      toast.error(
         err.response?.data?.error || "Failed to add product. Please try again."
       );
     } finally {
@@ -121,45 +119,6 @@ export default function AddProductPage() {
           Fill in the details below to add a new product to the catalog
         </p>
       </div>
-
-      {/* Alert Messages */}
-      {error && (
-        <div className="alert alert-error mb-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{error}</span>
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success mb-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{success}</span>
-        </div>
-      )}
 
       {/* Form */}
       <div className="card bg-base-100 shadow-xl">
@@ -331,6 +290,20 @@ export default function AddProductPage() {
           </form>
         </div>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

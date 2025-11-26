@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Zap, Percent } from "lucide-react";
+import Link from "next/link";
 
 const PromoBanner = () => {
   const calculateTimeLeft = () => {
     const now = new Date();
     const endOfDay = new Date();
-    endOfDay.setHours(24, 0, 0, 0); 
+    endOfDay.setHours(24, 0, 0, 0);
 
     const difference = endOfDay - now;
 
@@ -78,13 +79,19 @@ const PromoBanner = () => {
             </div>
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-100 transition-all hover:scale-105 focus:ring-2 focus:ring-white focus:outline-none">
+              <Link
+                href={"/products"}
+                className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-100 transition-all hover:scale-105 focus:ring-2 focus:ring-white focus:outline-none"
+              >
                 Shop Now
                 <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold border-2 border-white/50 hover:bg-white/30 transition-all focus:ring-2 focus:ring-white focus:outline-none">
+              </Link>
+              <Link
+                href={"/services"}
+                className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold border-2 border-white/50 hover:bg-white/30 transition-all focus:ring-2 focus:ring-white focus:outline-none"
+              >
                 Learn More
-              </button>
+              </Link>
             </div>
             {/* Countdown or Timer */}
             <div className="flex items-center gap-4 pt-6">

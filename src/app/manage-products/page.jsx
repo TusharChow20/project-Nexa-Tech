@@ -6,6 +6,8 @@ import Image from "next/image";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Eye, Trash2, Edit, Grid3x3, List, Search, Filter } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -41,6 +43,7 @@ export default function ManageProductsPage() {
       setFilteredProducts(userProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
+      toast.error("Failed to fetch products. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,7 +68,11 @@ export default function ManageProductsPage() {
   };
 
   const handleDelete = async (productId) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    // Custom confirmation toast
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmDelete) return;
 
     setDeleteLoading(productId);
     try {
@@ -75,10 +82,16 @@ export default function ManageProductsPage() {
 
       // Remove from state
       setProducts(products.filter((p) => p._id !== productId));
-      alert("Product deleted successfully!");
+      toast.success("Product deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error("Error deleting product:", error);
-      alert(error.response?.data?.error || "Failed to delete product");
+      toast.error(error.response?.data?.error || "Failed to delete product", {
+        position: "top-right",
+        autoClose: 4000,
+      });
     } finally {
       setDeleteLoading(null);
     }
@@ -118,6 +131,8 @@ export default function ManageProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <ToastContainer />
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">

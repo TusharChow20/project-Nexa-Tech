@@ -5,7 +5,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { ObjectId } from "bson";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -28,6 +29,7 @@ export default function UpdateProductPage({ params }) {
   useEffect(() => {
     // Redirect if not authenticated
     if (status === "unauthenticated") {
+      toast.error("Please login to update products");
       router.push("/login");
       return;
     }
@@ -40,14 +42,14 @@ export default function UpdateProductPage({ params }) {
         const product = res.data;
 
         if (!product) {
-          alert("Product not found!");
+          toast.error("Product not found!");
           router.push("/products");
           return;
         }
 
         // Check if user owns this product
         if (session?.user?.email !== product.userEmail) {
-          alert("You don't have permission to edit this product!");
+          toast.error("You don't have permission to edit this product!");
           router.push("/products");
           return;
         }
@@ -63,7 +65,7 @@ export default function UpdateProductPage({ params }) {
         });
       } catch (error) {
         console.error("Error fetching product:", error);
-        alert("Failed to load product data");
+        toast.error("Failed to load product data");
         router.push("/products");
       } finally {
         setLoading(false);
@@ -93,12 +95,12 @@ export default function UpdateProductPage({ params }) {
       !formData.price ||
       !formData.image
     ) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (!session?.user?.email) {
-      alert("You must be logged in to update products");
+      toast.error("You must be logged in to update products");
       return;
     }
 
@@ -119,11 +121,14 @@ export default function UpdateProductPage({ params }) {
 
       await axios.put(`${API_BASE_URL}/api/products/${id}`, updateData);
 
-      alert("Product updated successfully!");
-      router.push(`/products/${id}`);
+      toast.success("Product updated successfully! Redirecting...");
+
+      setTimeout(() => {
+        router.push(`/products/${id}`);
+      }, 1500);
     } catch (error) {
       console.error("Error updating product:", error);
-      alert(
+      toast.error(
         error.response?.data?.error ||
           "Failed to update product. Please try again."
       );
@@ -319,6 +324,20 @@ export default function UpdateProductPage({ params }) {
           </div>
         </form>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

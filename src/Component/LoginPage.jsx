@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { User, Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { ToastContainer } from "react-toastify";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -12,6 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+
     try {
       const res = await signIn("credentials", {
         email,
@@ -20,12 +22,16 @@ export default function LoginPage() {
       });
 
       if (res.error) {
+        toast.error("Invalid Credentials!");
         setError("Invalid Credentials");
         return;
       }
+
+      toast.success("Login successful!");
       router.replace("/");
     } catch (error) {
       console.log(error);
+      toast.error("An error occurred during login");
     }
   };
 
@@ -36,11 +42,11 @@ export default function LoginPage() {
     const password = e.target.password.value;
 
     if (!name || !email || !password) {
+      toast.error("Please fill up all the fields");
       setError("Please fill up all the fields");
       return;
     }
 
-    // fetching routes
     try {
       const resUserExits = await fetch("/api/userExits", {
         method: "POST",
@@ -52,6 +58,7 @@ export default function LoginPage() {
 
       const { user } = await resUserExits.json();
       if (user) {
+        toast.error("User already exists!");
         setError("User Already Exits");
         return;
       }
@@ -71,15 +78,38 @@ export default function LoginPage() {
       if (res.ok) {
         const form = e.target;
         form.reset();
-        router.push("/");
+
+        toast.success("Registration successful! Logging you in...");
+
+        // Automatically sign in after successful registration
+        const signInRes = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+
+        if (signInRes.error) {
+          toast.error(
+            "Registration successful but login failed. Please login manually."
+          );
+          setError(
+            "Registration successful but login failed. Please login manually."
+          );
+          return;
+        }
+
+        toast.success("Welcome! Redirecting...");
+        router.replace("/");
       } else {
         console.log("registration failed");
+        toast.error("Registration failed. Please try again.");
+        setError("Registration failed. Please try again.");
       }
-    } catch {
-      console.log("failed");
+    } catch (error) {
+      console.log("failed", error);
+      toast.error("An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
     }
-    // console.log("Register submitted:", name, email, password);
-    // Add your registration logic here
   };
 
   return (
@@ -317,6 +347,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     className="btn btn-outline btn-sm w-full"
+                    onClick={() => signIn("google", { callbackUrl: "/" })}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path
@@ -354,6 +385,18 @@ export default function LoginPage() {
           </button>
         </p>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }
