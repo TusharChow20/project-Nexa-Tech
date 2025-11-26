@@ -1,13 +1,12 @@
+"use client";
 import React from "react";
-import { User, Package, Settings } from "lucide-react";
+import { User, Package, Settings, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
-  const isLoggedIn = false;
-  const user = {
-    name: "John Doe",
-    email: "john@nexatech.com",
-  };
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
 
   const routes = [
     { name: "Home", path: "/" },
@@ -18,8 +17,8 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="navbar bg-base-100 shadow-md sticky top-0 z-50 ">
-      <div className="navbar-start ">
+    <div className="navbar bg-base-100 shadow-md sticky top-0 z-50">
+      <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
             <svg
@@ -43,7 +42,7 @@ export default function Navbar() {
           >
             {routes.map((route) => (
               <li key={route.path}>
-                <a href={route.path}>{route.name}</a>
+                <Link href={route.path}>{route.name}</Link>
               </li>
             ))}
           </ul>
@@ -65,7 +64,7 @@ export default function Navbar() {
         <ul className="menu menu-horizontal px-1">
           {routes.map((route) => (
             <li key={route.path}>
-              <a href={route.path}>{route.name}</a>
+              <Link href={route.path}>{route.name}</Link>
             </li>
           ))}
         </ul>
@@ -75,9 +74,9 @@ export default function Navbar() {
       <div className="navbar-end">
         {!isLoggedIn ? (
           <div className="flex gap-2">
-            <a href="/login" className="btn btn-ghost">
+            <Link href="/login" className="btn btn-ghost">
               Login
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="dropdown dropdown-end">
@@ -91,7 +90,7 @@ export default function Navbar() {
                   <User className="w-4 h-4" />
                 </div>
               </div>
-              <span className="hidden md:inline">{user.name}</span>
+              <span className="hidden md:inline">{session?.user?.name}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4"
@@ -114,9 +113,11 @@ export default function Navbar() {
               {/* User Info Header */}
               <li className="menu-title">
                 <div className="flex flex-col gap-0.5 px-2 py-2">
-                  <span className="font-semibold text-base">{user.name}</span>
+                  <span className="font-semibold text-base">
+                    {session?.user?.name}
+                  </span>
                   <span className="text-xs opacity-60 font-normal">
-                    {user.email}
+                    {session?.user?.email}
                   </span>
                 </div>
               </li>
@@ -124,18 +125,26 @@ export default function Navbar() {
                 <div className="divider my-0"></div>
               </li>
 
+              {/* Dashboard Link */}
+              <li>
+                <Link href="/dashboard">
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              </li>
+
               {/* Menu Items */}
               <li>
-                <a href="/add-product">
+                <Link href="/add-product">
                   <Package className="w-4 h-4" />
                   Add Product
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/manage-products">
+                <Link href="/manage-products">
                   <Settings className="w-4 h-4" />
                   Manage Products
-                </a>
+                </Link>
               </li>
 
               {/* Logout */}
@@ -143,23 +152,13 @@ export default function Navbar() {
                 <div className="divider my-0"></div>
               </li>
               <li>
-                <a href="/logout" className="text-error">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                  </svg>
+                <button
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  className="text-error"
+                >
+                  <LogOut className="w-4 h-4" />
                   Logout
-                </a>
+                </button>
               </li>
             </ul>
           </div>
