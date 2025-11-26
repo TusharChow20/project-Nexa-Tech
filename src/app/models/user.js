@@ -13,6 +13,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+      default: null, // Profile image URL
+    },
   },
   { timestamps: true }
 );

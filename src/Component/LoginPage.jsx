@@ -23,7 +23,7 @@ export default function LoginPage() {
         setError("Invalid Credentials");
         return;
       }
-      router.replace("/dashboard");
+      router.replace("/");
     } catch (error) {
       console.log(error);
     }
@@ -184,6 +184,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     className="btn btn-outline btn-sm w-full"
+                    onClick={() => signIn("google", { callbackUrl: "/" })}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path

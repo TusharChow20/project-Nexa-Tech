@@ -16,6 +16,18 @@ export default function Navbar() {
     { name: "Contact", path: "/contact" },
   ];
 
+  // Generate avatar URL based on user name
+  const getAvatarUrl = () => {
+    if (session?.user?.image) {
+      return session.user.image;
+    }
+    // Fallback to UI Avatars with user's name
+    const name = session?.user?.name || "User";
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      name
+    )}&background=random&color=fff&size=128`;
+  };
+
   return (
     <div className="navbar bg-base-100 shadow-md sticky top-0 z-50">
       <div className="navbar-start">
@@ -85,9 +97,12 @@ export default function Navbar() {
               role="button"
               className="btn btn-ghost flex items-center gap-2"
             >
-              <div className="avatar placeholder">
-                <div className="bg-gradient-to-br from-primary to-secondary text-neutral-content w-8 rounded-full">
-                  <User className="w-4 h-4" />
+              <div className="avatar">
+                <div className="w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                  <img
+                    src={getAvatarUrl()}
+                    alt={session?.user?.name || "User"}
+                  />
                 </div>
               </div>
               <span className="hidden md:inline">{session?.user?.name}</span>
@@ -112,13 +127,23 @@ export default function Navbar() {
             >
               {/* User Info Header */}
               <li className="menu-title">
-                <div className="flex flex-col gap-0.5 px-2 py-2">
-                  <span className="font-semibold text-base">
-                    {session?.user?.name}
-                  </span>
-                  <span className="text-xs opacity-60 font-normal">
-                    {session?.user?.email}
-                  </span>
+                <div className="flex items-center gap-3 px-2 py-2">
+                  <div className="avatar">
+                    <div className="w-10 rounded-full">
+                      <img
+                        src={getAvatarUrl()}
+                        alt={session?.user?.name || "User"}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-semibold text-base">
+                      {session?.user?.name}
+                    </span>
+                    <span className="text-xs opacity-60 font-normal">
+                      {session?.user?.email}
+                    </span>
+                  </div>
                 </div>
               </li>
               <li className="my-1">

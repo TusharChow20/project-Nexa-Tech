@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useMemo } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ export default function ProductDetailsPage({ params }) {
   const router = useRouter();
   const { data: session } = useSession();
   const { id } = use(params);
-
+  // let isOwner = false;
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -42,7 +42,15 @@ export default function ProductDetailsPage({ params }) {
   }, [id]);
 
   // Check if current user owns the product
-  const isOwner = product && session?.user?.email === product.userEmail;
+  // console.log(session?.user?.email);
+
+  const isOwner = useMemo(() => {
+    return (
+      product &&
+      session?.user?.email &&
+      session?.user?.email === product.userEmail
+    );
+  }, [product, session?.user?.email]);
 
   const handleUpdateProduct = () => {
     router.push(`/update-product/${product._id}`);

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -10,7 +10,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 export default function AddProductPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-
+  if (!session) {
+    redirect("/login");
+  }
   const [formData, setFormData] = useState({
     title: "",
     image: "",
@@ -205,9 +207,7 @@ export default function AddProductPage() {
             {/* Image URL */}
             <div className="form-control mb-4">
               <label className="label">
-                <span className="label-text font-semibold">
-                  Image URL <span className="text-error">*</span>
-                </span>
+                <span className="label-text font-semibold">Image URL</span>
               </label>
               <input
                 type="url"
@@ -216,7 +216,6 @@ export default function AddProductPage() {
                 onChange={handleChange}
                 placeholder="https://images.unsplash.com/photo-..."
                 className="input input-bordered w-full"
-                required
               />
               {formData.image && (
                 <div className="mt-2">
