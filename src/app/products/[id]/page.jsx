@@ -4,22 +4,33 @@ import React, { useEffect, useState, use } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, Tag, DollarSign } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Tag,
+  DollarSign,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function ProductDetailsPage({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
   const { id } = use(params);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get("/productData.json");
-        const foundProduct = res.data.find((p) => p.id === parseInt(id));
-        setProduct(foundProduct);
+        const res = await axios.get(`${API_BASE_URL}/api/products/${id}`);
+        setProduct(res.data);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching product:", error);
       } finally {
         setLoading(false);
       }
@@ -29,6 +40,45 @@ export default function ProductDetailsPage({ params }) {
       fetchProduct();
     }
   }, [id]);
+
+  // Check if current user owns the product
+  const isOwner = product && session?.user?.email === product.userEmail;
+
+  const handleUpdateProduct = () => {
+    router.push(`/update-product/${product._id}`);
+  };
+
+  const handleDeleteProduct = async () => {
+    if (
+      !confirm(
+        "Are you sure you want to delete this product? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    if (!session?.user?.email) {
+      alert("You must be logged in to delete products");
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await axios.delete(`${API_BASE_URL}/api/products/${product._id}`, {
+        data: { userEmail: session.user.email }, // Backend requires userEmail for authorization
+      });
+      alert("Product deleted successfully!");
+      router.push("/products");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert(
+        error.response?.data?.error ||
+          "Failed to delete product. Please try again."
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -104,9 +154,28 @@ export default function ProductDetailsPage({ params }) {
           <div className="space-y-6">
             {/* Title */}
             <div>
-              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                {product.title}
-              </h1>
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {product.title}
+                </h1>
+                {isOwner && (
+                  <div className="badge badge-success gap-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Your Product
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-2 mt-3">
                 <span
                   className={`badge ${getPriorityColor(
@@ -159,7 +228,9 @@ export default function ProductDetailsPage({ params }) {
                     <Tag className="w-5 h-5 text-primary" />
                     <div>
                       <p className="text-sm opacity-60">Product ID</p>
-                      <p className="font-semibold">#{product.id}</p>
+                      <p className="font-semibold font-mono text-xs">
+                        {product._id}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -168,10 +239,43 @@ export default function ProductDetailsPage({ params }) {
 
             {/* Action Buttons */}
             <div className="flex gap-4 pt-4">
-              <button className="btn btn-primary btn-lg flex-1">
-                Add to Cart
-              </button>
-              <button className="btn btn-outline btn-lg flex-1">Buy Now</button>
+              {isOwner ? (
+                <>
+                  <button
+                    onClick={handleUpdateProduct}
+                    className="btn btn-primary btn-lg flex-1 gap-2"
+                  >
+                    <Pencil className="w-5 h-5" />
+                    Update Product
+                  </button>
+                  <button
+                    onClick={handleDeleteProduct}
+                    disabled={deleting}
+                    className="btn btn-error btn-lg flex-1 gap-2"
+                  >
+                    {deleting ? (
+                      <>
+                        <span className="loading loading-spinner loading-sm"></span>
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-5 h-5" />
+                        Delete Product
+                      </>
+                    )}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button className="btn btn-primary btn-lg flex-1">
+                    Add to Cart
+                  </button>
+                  <button className="btn btn-outline btn-lg flex-1">
+                    Buy Now
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

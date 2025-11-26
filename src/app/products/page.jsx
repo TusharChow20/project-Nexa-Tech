@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -11,14 +14,15 @@ export default function ProductsPage() {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/productData.json");
+        const res = await axios.get(`${API_BASE_URL}/api/products`);
         setProducts(res.data);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
@@ -35,6 +39,15 @@ export default function ProductsPage() {
 
   const handleViewDetails = (productId) => {
     router.push(`/products/${productId}`);
+  };
+
+  const handleEditProduct = (productId) => {
+    router.push(`/update-product/${productId}`);
+  };
+
+  // Check if current user owns the product
+  const isOwner = (productEmail) => {
+    return session?.user?.email === productEmail;
   };
 
   return (
@@ -88,7 +101,7 @@ export default function ProductsPage() {
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className="card bg-base-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 transform transition-all duration-300"
             >
               <figure className="relative w-full h-48">
@@ -114,17 +127,52 @@ export default function ProductsPage() {
                     {product.meta.date}
                   </span>
                 </div>
+                {isOwner(product.userEmail) && (
+                  <div className="badge badge-success badge-sm gap-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3 w-3"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Your Product
+                  </div>
+                )}
 
-                <div className="card-actions items-center justify-between mt-2">
-                  <span className="text-2xl font-bold text-primary">
-                    ${product.price}
-                  </span>
-                  <button
-                    onClick={() => handleViewDetails(product.id)}
-                    className="btn btn-primary btn-sm"
-                  >
-                    Details
-                  </button>
+                <div className="card-actions flex-col items-stretch mt-2 gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-primary">
+                      ${product.price}
+                    </span>
+                    <button
+                      onClick={() => handleViewDetails(product._id)}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Details
+                    </button>
+                  </div>
+                  {isOwner(product.userEmail) && (
+                    <button
+                      onClick={() => handleEditProduct(product._id)}
+                      className="btn btn-outline btn-sm w-full"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Edit Product
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
